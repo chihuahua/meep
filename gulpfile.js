@@ -11,7 +11,7 @@ var closureCompiler = require('gulp-closure-compiler');
 var util = require('gulp-util');
 
 gulp.task('default', function() {
-	compileJs();
+  compileJs();
 });
 
 gulp.task('serve', function() {
@@ -23,14 +23,14 @@ gulp.task('serve', function() {
  * @return {!Object} The gulp result from compilation.
  */
 function compileJs() {
-	// Compile and minify JS.
+  // Compile and minify JS.
   gulp.src('js/**/*.js')
     .pipe(closureCompiler({
       compilerPath: 'node_modules/google-closure-compiler/compiler.jar',
       // The name of the compiled JS.
       fileName: 'm.js',
       compilerFlags: {
-      	// The entry point for JS to run.
+        // The entry point for JS to run.
         closure_entry_point: 'meep.entryPoints.main',
         // Change the compilation level to WHITESPACE to simply concatenate all
         // JS files together instead of doing any minification. WHITESPACE is
@@ -52,7 +52,7 @@ function compileJs() {
  * @param {!Object|string} err The error object or string.
  */
 function logError(err) {
-	util.log(util.colors.red(err));
+  util.log(util.colors.red(err));
 }
 
 /**
