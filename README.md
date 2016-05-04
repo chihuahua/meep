@@ -4,7 +4,7 @@ meep is a simple app that uses gulp for building. meep will do something cool so
 
 ## Setup
 
-`cd` into the repo home dir and call `npm install` to install gulp plugins meep depends on.
+`cd` into the repo home dir and call `npm install` to install gulp plugins meep depends on. Then run `mkdir build/css build/js` so the build command can find them.
 
 ## Building
 
