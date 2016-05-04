@@ -1,3 +1,4 @@
 node_modules/
-build/*
+build/css/*
+build/js/*
 .DS_Store

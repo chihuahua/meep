@@ -42,9 +42,9 @@ function compileJs() {
         warning_level: 'VERBOSE'
       }
     }))
-    .on('error', logMessage)
+    .on('error', logError)
     // Save compiled JS to the build directory.
-    .pipe(gulp.dest('build'));
+    .pipe(gulp.dest('build/js'));
 }
 
 /**
