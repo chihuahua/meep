@@ -8,7 +8,7 @@ meep is a simple app that uses gulp for building. meep will do something cool so
 
 ## Building
 
-Running `gulp` builds minified `build/m.js`. 
+Running `gulp` builds minified `build/js/m.js`. 
 
 ## Serving for local development
 
