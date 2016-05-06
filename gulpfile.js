@@ -8,10 +8,13 @@ require('harmonize')();
 var browserSync = require('browser-sync').create();
 var gulp = require('gulp');
 var closureCompiler = require('gulp-closure-compiler');
+var closureCssRenamer = require('gulp-closure-css-renamer');
+var concat = require('gulp-concat');
+var less = require('gulp-less');
 var util = require('gulp-util');
 
 gulp.task('default', function() {
-  compileJs();
+  compileCss().on('end', compileJs);
 });
 
 gulp.task('serve', function() {
@@ -31,7 +34,10 @@ function compileJs() {
       fileName: 'm.js',
       compilerFlags: {
         // The entry point for JS to run.
-        closure_entry_point: 'meep.entryPoints.main',
+        closure_entry_point: [
+          'cssVocabulary',
+          'meep.entryPoints.main',
+        ],
         // Change the compilation level to WHITESPACE to simply concatenate all
         // JS files together instead of doing any minification. WHITESPACE is
         // useful for debugging. Debugging obfuscated JS is obvi harder.
@@ -45,6 +51,21 @@ function compileJs() {
     .on('error', logError)
     // Save compiled JS to the build directory.
     .pipe(gulp.dest('build/js'));
+}
+
+/**
+ * Compiles CSS.
+ */
+function compileCss() {
+  // Minify CSS and create a rename mapping to be used during JS compilation.
+  return gulp.src('js/**/*.css')
+    .pipe(less())
+    .pipe(concat('c.css'))
+    .pipe(closureCssRenamer({
+      compress: true,
+      renameFile: 'js/closure/rename-mapping.js'
+    }))
+    .pipe(gulp.dest('build/css'));
 }
 
 /**
