@@ -60,11 +60,13 @@ function compileCss() {
   // Minify CSS and create a rename mapping to be used during JS compilation.
   return gulp.src('js/**/*.css')
     .pipe(less())
+    .on('error', logError)
     .pipe(concat('c.css'))
     .pipe(closureCssRenamer({
       compress: true,
       renameFile: 'js/closure/rename-mapping.js'
     }))
+    .on('error', logError)
     .pipe(gulp.dest('build/css'));
 }
 
