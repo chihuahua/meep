@@ -1,4 +1,4 @@
 goog.provide('cssVocabulary');
 goog.setCssNameMapping(
-{"mainContent":"a"}
+{"toggleRecordingWidget":"a","micRequestingWidget":"b","noMicWidget":"c"}
 ,'BY_WHOLE');

@@ -3,6 +3,7 @@
  */
 
 // Let gulp plugins (not application JS code) use ES6.
+// The gulp-closure-compiler module uses ES6.
 require('harmonize')();
 
 var browserSync = require('browser-sync').create();
@@ -10,16 +11,29 @@ var gulp = require('gulp');
 var closureCompiler = require('gulp-closure-compiler');
 var closureCssRenamer = require('gulp-closure-css-renamer');
 var concat = require('gulp-concat');
+var htmlmin = require('gulp-htmlmin');
 var less = require('gulp-less');
 var util = require('gulp-util');
 
 gulp.task('default', function() {
+  minifyHtml();
+  // We must compile javascript after generating the CSS renaming map.
   compileCss().on('end', compileJs);
 });
 
 gulp.task('serve', function() {
   launchDevelopmentServer();
 });
+
+/**
+ * Minifies HTML.
+ * @return {!Object} The gulp result from minification.
+ */
+function minifyHtml() {
+  return gulp.src('html/*.html')
+    .pipe(htmlmin({collapseWhitespace: true}))
+    .pipe(gulp.dest('build'));
+}
 
 /**
  * Compiles JS.
@@ -42,6 +56,12 @@ function compileJs() {
         // JS files together instead of doing any minification. WHITESPACE is
         // useful for debugging. Debugging obfuscated JS is obvi harder.
         compilation_level: 'ADVANCED_OPTIMIZATIONS',
+
+        // Uncomment the above and use these 2 options for no compilation at
+        // all. This is helpful for debugging.
+        // compilation_level: 'WHITESPACE_ONLY',
+        // formatting: 'PRETTY_PRINT',
+
         externs: [],
         // Do not include any un-needed JS in our app.
         only_closure_dependencies: true,

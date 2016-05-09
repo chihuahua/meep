@@ -1,0 +1,29 @@
+body {
+  padding: 20px 100px;
+  font-family: arial;
+  text-align: center;
+}
+
+.micRequestingWidget img, .noMicWidget img {
+  border-radius: 10px;
+}
+
+.toggleRecordingWidget {
+  border: 1px solid #000080;
+  border-radius: 10px;
+  color: #000080;
+  cursor: pointer;
+  display: inline-block;
+  padding: 10px;
+  transition-duration: 100ms;
+}
+
+.toggleRecordingWidget:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.toggleRecordingWidget[data-disabled=1] {
+  cursor: default;
+  opacity: 0.7;
+}
