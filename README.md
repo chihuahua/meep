@@ -1,6 +1,6 @@
 # meep
 
-meep is a simple app that uses gulp for building. meep will do something cool soon.
+meep is a simple app that uses gulp for building. It records mono audio and compresses to mp3 data on the fly in a web worker (to free up the UI thread). Since we only store compressed audio data, we can record for hours.
 
 ## Setup
 
@@ -8,7 +8,7 @@ meep is a simple app that uses gulp for building. meep will do something cool so
 
 ## Building
 
-Running `gulp` builds minified `build/js/m.js`. 
+Running `gulp` builds minified `build/js/m.js`.
 
 ## Serving for local development
 
