@@ -19,7 +19,7 @@ meep.ui.ToggleRecordingWidget = function(recordingStateManager) {
   // Initialize button text.
   this.assignTextContent_(recordingStateManager);
   recordingStateManager.listen(meep.recording.Messages.RECORDING_STATE_CHANGED,
-      this.assignTextContent_);
+      this.assignTextContent_.bind(this));
 
   element.addEventListener('click', function(e) {
     e.preventDefault();

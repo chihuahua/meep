@@ -2,6 +2,7 @@ goog.provide('meep.entryPoints.main');
 
 goog.require('meep.recording.RecordingStateManager');
 goog.require('meep.ui.MicRequestingWidget');
+goog.require('meep.ui.Mp3PlayWidget');
 goog.require('meep.ui.NoMicWidget');
 goog.require('meep.ui.ToggleRecordingWidget');
 
@@ -34,6 +35,10 @@ meep.entryPoints.main = function() {
     var toggleRecordingWidget =
         new meep.ui.ToggleRecordingWidget(recordingStateManager);
     document.body.appendChild(toggleRecordingWidget.getDom());
+
+    // Create a widget for playing recorded MP3s.
+    var playWidget = new meep.ui.Mp3PlayWidget(recordingStateManager);
+    document.body.appendChild(playWidget.getDom());
   }, function(reason) {
     // Microphone permissions denied ... or failed to obtain mic.
     var noMicWidget = new meep.ui.NoMicWidget(reason);

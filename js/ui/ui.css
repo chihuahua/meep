@@ -8,6 +8,11 @@ body {
   border-radius: 10px;
 }
 
+.mp3PlayWidget {
+  display: none;
+  margin: 10px;
+}
+
 .toggleRecordingWidget {
   border: 1px solid #000080;
   border-radius: 10px;

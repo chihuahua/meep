@@ -77,14 +77,14 @@ function compileJs(compiledFileName, entryPoint) {
         // Change the compilation level to WHITESPACE to simply concatenate all
         // JS files together instead of doing any minification. WHITESPACE is
         // useful for debugging. Debugging obfuscated JS is obvi harder.
-        compilation_level: 'ADVANCED_OPTIMIZATIONS',
+        // compilation_level: 'ADVANCED_OPTIMIZATIONS',
 
         // Uncomment the above and use these 2 options for no compilation at
         // all. This is helpful for debugging.
-        // compilation_level: 'WHITESPACE_ONLY',
-        // formatting: 'PRETTY_PRINT',
+        compilation_level: 'WHITESPACE_ONLY',
+        formatting: 'PRETTY_PRINT',
 
-        externs: [],
+        externs: ['third-party/closure-externs/**/*.js'],
         // Do not include any un-needed JS in our app.
         only_closure_dependencies: true,
         warning_level: 'VERBOSE'

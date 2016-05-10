@@ -7,7 +7,7 @@ goog.require('meep.recording.WorkerMessages');
 
 
 meep.entryPoints.mp3Worker = function() {
-  goog.global.importScripts('js/lame.js');
+  goog.global.importScripts('../lame.js');
 
   var ljs = new lamejs();
 
@@ -47,7 +47,8 @@ meep.entryPoints.mp3Worker = function() {
 
         // Create a blob of mp3 file data.
         var url = goog.global.URL.createObjectURL(
-            new Blob(mp3Bytes, {'type': 'audio/mpeg'}))
+            new Blob(mp3Bytes, {'type': 'audio/mpeg'}));
+        mp3Bytes.length = 0;
 
         // Reset recording.
         mp3Encoder = new ljs['Mp3Encoder'](channelCount, sampleRate, bitRate);

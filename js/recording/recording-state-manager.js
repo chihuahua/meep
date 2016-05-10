@@ -1,6 +1,7 @@
 goog.provide('meep.recording.RecordingStateManager');
 
 goog.require('meep.messaging.Dispatcher');
+goog.require('meep.recording.Messages');
 goog.require('meep.recording.RecordingState');
 goog.require('meep.recording.WorkerMessages');
 
@@ -14,6 +15,7 @@ goog.require('meep.recording.WorkerMessages');
  * @extends {meep.messaging.Dispatcher}
  */
 meep.recording.RecordingStateManager = function(mediaStream) {
+  var self = this;
   var audioContext = meep.recording.RecordingStateManager.AudioContext_;
 
   /**
@@ -40,7 +42,6 @@ meep.recording.RecordingStateManager = function(mediaStream) {
    */
   this.mp3Url_ = '';
 
-  var self = this;
   this.mp3Worker_.onmessage = function(e) {
     var messageType = e.data[0];
     switch (messageType) {
@@ -50,7 +51,10 @@ meep.recording.RecordingStateManager = function(mediaStream) {
       case meep.recording.WorkerMessages.RECORDING_COMPLETED:
         // TODO: Create a link for downloading the URL.
         self.mp3Url_ = e.data[1];
-        goog.global.console.log(self.mp3Url_);
+        
+        // Notify other entities that we have stopped recording.
+        self.setTransitionState_(meep.recording.RecordingState.IDLE);
+
         break;
     }
   };
@@ -64,11 +68,12 @@ meep.recording.RecordingStateManager = function(mediaStream) {
    * @private {!ScriptProcessorNode}
    */
   this.scriptProcessorNode_ =
-      audioContext.createScriptProcessor(undefined, 1, 1);
+      audioContext.createScriptProcessor(0, 1, 1);
+  // The args above are 0 (auto-determine buffer size, number of input channels,
+  // and number of output channels).
   this.scriptProcessorNode_.connect(audioContext.destination);
 
   // On obtaining audio data,
-  var self = this;
   this.scriptProcessorNode_.onaudioprocess = function(e) {
     // We only get 1 channel of data.
     var rawData = e.inputBuffer.getChannelData(0);
@@ -93,7 +98,7 @@ meep.recording.RecordingStateManager = function(mediaStream) {
 
     self.mp3Worker_.postMessage(
         [meep.recording.WorkerMessages.MORE_AUDIO_DATA, clampedData.buffer],
-        clampedData.buffer);
+        [clampedData.buffer]);
   };
 
   /**
@@ -119,12 +124,12 @@ meep.recording.RecordingStateManager.AudioContext_ = new AudioContext();
  * nothing if transitioning.
  */
 meep.recording.RecordingStateManager.prototype.toggleRecording = function() {
-  if (this.recordingState_ == meep.recording.RecordingState.IDLE) {
+  if (this.recordingState_ == meep.recording.RecordingState.TRANSITIONING) {
     return;
   }
   // TODO: Actually do recording.
   if (this.recordingState_ == meep.recording.RecordingState.RECORDING) {
-    this.recordingState_ = meep.recording.RecordingState.TRANSITIONING;
+    this.setTransitionState_(meep.recording.RecordingState.TRANSITIONING);
     // Disconnect the source node on stopping.
     this.mediaStreamAudioSourceNode_.disconnect();
     // Tell the worker to stop recording.
@@ -132,7 +137,7 @@ meep.recording.RecordingStateManager.prototype.toggleRecording = function() {
     // this.recordingState_ = meep.recording.RecordingState.IDLE;
   } else if (this.recordingState_ == meep.recording.RecordingState.IDLE) {
     // We are currently idle. Begin recording.
-    this.recordingState_ = meep.recording.RecordingState.RECORDING;
+    this.setTransitionState_(meep.recording.RecordingState.RECORDING);
     this.samplesProcessed_ = 0;
     this.mediaStreamAudioSourceNode_.connect(this.scriptProcessorNode_);
 
@@ -141,6 +146,17 @@ meep.recording.RecordingStateManager.prototype.toggleRecording = function() {
       goog.global.URL.revokeObjectURL(this.mp3Url_);
     }
   }
+};
+
+
+/**
+ * Sets the current state of recording. Notifies other entities of a change.
+ * @param {meep.recording.RecordingState} newState
+ */
+meep.recording.RecordingStateManager.prototype.setTransitionState_ = function(
+    newState) {
+  this.recordingState_ = newState;
+  this.dispatch(meep.recording.Messages.RECORDING_STATE_CHANGED);
 };
 
 
@@ -158,4 +174,12 @@ meep.recording.RecordingStateManager.prototype.getRecordingTime = function() {
  */
 meep.recording.RecordingStateManager.prototype.getRecordingState = function() {
   return this.recordingState_;
+};
+
+
+/**
+ * @return {string} The URL of the most recent MP3.
+ */
+meep.recording.RecordingStateManager.prototype.getMp3Url = function() {
+  return this.mp3Url_;
 };
