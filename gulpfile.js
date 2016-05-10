@@ -18,7 +18,10 @@ var util = require('gulp-util');
 gulp.task('default', function() {
   minifyHtml();
   // We must compile javascript after generating the CSS renaming map.
-  compileCss().on('end', compileJs);
+  compileCss().on('end', function() {
+    compileMainEntryPoint();
+    compileMp3WebWorkerEntryPoint();
+  });
 });
 
 gulp.task('serve', function() {
@@ -36,21 +39,40 @@ function minifyHtml() {
 }
 
 /**
- * Compiles JS.
+ * Compiles JS for the main app entry point.
  * @return {!Object} The gulp result from compilation.
  */
-function compileJs() {
+function compileMainEntryPoint() {
+  return compileJs('m.js', 'meep.entryPoints.main');
+}
+
+/**
+ * Compiles JS for the web worker entry point (for encoding MP3s).
+ * @return {!Object} The gulp result from compilation.
+ */
+function compileMp3WebWorkerEntryPoint() {
+  return compileJs('mp3.js', 'meep.entryPoints.mp3Worker');
+}
+
+/**
+ * Compiles JS.
+ * @param {string} compiledFileName The name of the compiled file. Saved in
+ *     build/js.
+ * @param {string} entryPoint The entry point. Must be provided somewhere.
+ * @return {!Object} The gulp result from compilation.
+ */
+function compileJs(compiledFileName, entryPoint) {
   // Compile and minify JS.
   gulp.src('js/**/*.js')
     .pipe(closureCompiler({
       compilerPath: 'node_modules/google-closure-compiler/compiler.jar',
       // The name of the compiled JS.
-      fileName: 'm.js',
+      fileName: compiledFileName,
       compilerFlags: {
         // The entry point for JS to run.
         closure_entry_point: [
           'cssVocabulary',
-          'meep.entryPoints.main',
+          entryPoint,
         ],
         // Change the compilation level to WHITESPACE to simply concatenate all
         // JS files together instead of doing any minification. WHITESPACE is
